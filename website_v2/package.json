@@ -1,0 +1,9 @@
+{
+  "name": "igris-dashboard-v2",
+  "version": "1.0.0",
+  "description": "IGRIS Dashboard V2 - AI Personal Assistant Premium UI",
+  "scripts": {
+    "dev": "npx -y live-server --port=3001 --no-browser",
+    "start": "npx -y live-server --port=3001"
+  }
+}

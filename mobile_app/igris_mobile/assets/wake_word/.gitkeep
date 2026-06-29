@@ -1,0 +1,4 @@
+# Placeholder so Flutter's asset bundler keeps this directory in the APK.
+# Replace with the real `hey_igris.tflite` produced by
+# `python3 tools/train_wake_word.py` — see assets/wake_word/README.md for
+# full instructions.

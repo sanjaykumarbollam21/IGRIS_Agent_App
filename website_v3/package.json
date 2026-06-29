@@ -1,0 +1,9 @@
+{
+  "name": "igris-dashboard-v3",
+  "version": "1.0.0",
+  "description": "IGRIS Dashboard V3 - UI Update",
+  "scripts": {
+    "dev": "npx -y live-server --port=3002 --no-browser",
+    "start": "npx -y live-server --port=3002"
+  }
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IGRIS — AI-Powered Personal Assistant</title>
+  <meta name="description" content="IGRIS: AI-powered personal assistant with system control, voice commands, and device monitoring.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ═══ LOGIN OVERLAY ═══ -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-particles"></div>
+    <div class="login-card">
+      <div class="login-logo">
+        <svg viewBox="0 0 60 60" width="60" height="60"><polygon points="30,6 54,18 54,42 30,54 6,42 6,18" fill="none" stroke="var(--cyan)" stroke-width="2.5"/><circle cx="30" cy="30" r="10" fill="var(--cyan)" opacity="0.2"/><circle cx="30" cy="30" r="5" fill="var(--cyan)"/></svg>
+      </div>
+      <h2>IGRIS NEURAL LINK</h2>
+      <p class="login-sub">Authenticate to access the control interface</p>
+      <form id="loginForm" autocomplete="off">
+        <div class="input-group">
+          <label>EMAIL</label>
+          <input type="email" id="loginEmail" required placeholder="operator@igris.ai">
+        </div>
+        <div class="input-group">
+          <label>PASSWORD</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••">
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button type="submit" class="btn-primary" id="loginBtn">
+          <span class="btn-text">AUTHORIZE</span>
+          <span class="btn-loader" style="display:none">◌</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Sidebar ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 40 40" width="28" height="28"><polygon points="20,4 36,14 36,30 20,40 4,30 4,14" fill="none" stroke="var(--cyan)" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="var(--cyan)"/></svg>
+      </div>
+      <div>
+        <h1>IGRIS</h1>
+        <span class="brand-version">v4.2.0</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- User Section -->
+      <div class="nav-section-title">ASSISTANT</div>
+      <div class="nav-item active" data-page="chat">
+        <span class="nav-icon">💬</span> Chat
+      </div>
+      <div class="nav-item" data-page="dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="controls">
+        <span class="nav-icon">🎛</span> Controls
+      </div>
+      <div class="nav-item" data-page="apps">
+        <span class="nav-icon">🚀</span> App Launcher
+      </div>
+
+      <!-- Admin Section -->
+      <div class="nav-section-title admin-only" id="adminSectionTitle">ADMIN</div>
+      <div class="nav-item admin-only" data-page="neural">
+        <span class="nav-icon">⬡</span> Neural Control
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item admin-only" data-page="logs">
+        <span class="nav-icon">▤</span> Neural Logs
+      </div>
+      <div class="nav-item admin-only" data-page="config">
+        <span class="nav-icon">⚙</span> System Config
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="backend-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusLabel">Connecting...</span>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div>
+          <div class="user-name" id="userName">User</div>
+          <div class="user-role" id="userRole">USER</div>
+        </div>
+      </div>
+      <button class="btn-deauth" id="btnLogout">↩ Logout</button>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ─── -->
+  <main class="main-content">
+
+    <!-- ═══ CHAT PAGE (User) ═══ -->
+    <div class="page active" id="page-chat">
+      <div class="page-header">
+        <h2>⚔ IGRIS Assistant</h2>
+        <p>AI-powered • Gemini 2.0 Flash</p>
+      </div>
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-empty" id="chatEmpty">
+            <div class="icon-big">⚔</div>
+            <h3>Hey, I'm IGRIS</h3>
+            <p>Your AI assistant. Ask me anything, control your laptop, or give a command.</p>
+            <div class="suggestion-chips">
+              <button class="chip" data-q="What is quantum computing?">Quantum computing</button>
+              <button class="chip" data-q="Lock my laptop">Lock laptop</button>
+              <button class="chip" data-q="Open Notepad">Open Notepad</button>
+              <button class="chip" data-q="What's the weather today?">Weather</button>
+              <button class="chip" data-q="Tell me a joke">Tell a joke</button>
+              <button class="chip" data-q="Explain machine learning">Machine learning</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <button class="btn-icon" id="micBtn" title="Voice input">🎙</button>
+          <input type="text" id="chatInput" placeholder="Ask IGRIS anything..." autocomplete="off">
+          <button class="btn-icon send" id="sendBtn" title="Send">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DASHBOARD PAGE (User) ═══ -->
+    <div class="page" id="page-dashboard">
+      <div class="page-header">
+        <h2>📊 System Dashboard</h2>
+        <p>Real-time stats from your connected device</p>
+      </div>
+      <div class="page-body">
+        <div class="stats-grid">
+          <div class="stat-card gradient-blue">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-label">CPU Usage</div>
+            <div class="stat-value" id="cpuUsage">--%</div>
+            <div class="progress-bar"><div class="fill" id="cpuBar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card gradient-purple">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-label">Memory</div>
+            <div class="stat-value" id="memUsage">--%</div>
+            <div class="progress-bar"><div class="fill purple" id="memBar" style="width:0%"></div></div>
+          </div>
+          <div class="stat-card gradient-amber">
+            <div class="stat-icon">🔋</div>
+            <div class="stat-label">Battery</div>
+            <div class="stat-value" id="batteryVal">--%</div>
+            <div class="stat-sub" id="batterySub">--</div>
+          </div>
+          <div class="stat-card gradient-green">
+            <div class="stat-icon">⏱</div>
+            <div class="stat-label">Uptime</div>
+            <div class="stat-value" id="uptimeVal">--</div>
+            <div class="stat-sub" id="uptimeSub">--</div>
+          </div>
+        </div>
+        <div class="device-grid">
+          <div class="card">
+            <div class="card-title">🖥 Device Info</div>
+            <div id="deviceInfo" class="device-info-text">Loading...</div>
+          </div>
+          <div class="card">
+            <div class="card-title">💾 Disk Usage</div>
+            <div id="diskInfo" class="device-info-text">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CONTROLS PAGE (User) ═══ -->
+    <div class="page" id="page-controls">
+      <div class="page-header">
+        <h2>🎛 Device Controls</h2>
+        <p>Control your laptop remotely</p>
+      </div>
+      <div class="page-body">
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">⚡ Power</div>
+          <div class="controls-grid">
+            <button class="control-btn" data-action="lock"><span class="c-icon">🔒</span><div class="label">Lock</div><div class="sub">Lock workstation</div></button>
+            <button class="control-btn" data-action="sleep"><span class="c-icon">😴</span><div class="label">Sleep</div><div class="sub">Suspend system</div></button>
+            <button class="control-btn" data-action="restart"><span class="c-icon">🔄</span><div class="label">Restart</div><div class="sub">30s countdown</div></button>
+            <button class="control-btn" data-action="shutdown"><span class="c-icon">⏻</span><div class="label">Shutdown</div><div class="sub">30s countdown</div></button>
+            <button class="control-btn" data-action="cancel_shutdown"><span class="c-icon">❌</span><div class="label">Cancel</div><div class="sub">Cancel shutdown</div></button>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">🔊 Volume</div>
+          <div class="controls-grid">
+            <button class="control-btn" data-action="volume_up"><span class="c-icon">🔊</span><div class="label">Volume Up</div></button>
+            <button class="control-btn" data-action="volume_down"><span class="c-icon">🔉</span><div class="label">Volume Down</div></button>
+            <button class="control-btn" data-action="volume_mute"><span class="c-icon">🔇</span><div class="label">Mute</div></button>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">☀ Display</div>
+          <div class="controls-grid">
+            <button class="control-btn" data-action="brightness_up"><span class="c-icon">☀️</span><div class="label">Brightness Up</div></button>
+            <button class="control-btn" data-action="brightness_down"><span class="c-icon">🌙</span><div class="label">Brightness Down</div></button>
+            <button class="control-btn" data-action="screen_off"><span class="c-icon">📺</span><div class="label">Screen Off</div></button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🛠 Utilities</div>
+          <div class="controls-grid">
+            <button class="control-btn" data-action="screenshot"><span class="c-icon">📸</span><div class="label">Screenshot</div></button>
+            <button class="control-btn" data-action="open_explorer"><span class="c-icon">📂</span><div class="label">File Explorer</div></button>
+            <button class="control-btn" data-action="task_manager"><span class="c-icon">📋</span><div class="label">Task Manager</div></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ APP LAUNCHER PAGE (User) ═══ -->
+    <div class="page" id="page-apps">
+      <div class="page-header">
+        <h2>🚀 App Launcher</h2>
+        <p>Quick-launch applications on your laptop</p>
+      </div>
+      <div class="page-body">
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">Custom Launch</div>
+          <div class="custom-launch">
+            <input type="text" id="appNameInput" placeholder="App name (e.g. notepad.exe, chrome)" class="custom-input">
+            <button class="btn-icon send" id="launchAppBtn" title="Launch">🚀</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Quick Launch</div>
+          <div class="controls-grid" id="appGrid">
+            <button class="control-btn app-btn" data-app="notepad.exe"><span class="c-icon">📝</span><div class="label">Notepad</div></button>
+            <button class="control-btn app-btn" data-app="calc.exe"><span class="c-icon">🧮</span><div class="label">Calculator</div></button>
+            <button class="control-btn app-btn" data-app="chrome"><span class="c-icon">🌐</span><div class="label">Chrome</div></button>
+            <button class="control-btn app-btn" data-app="code"><span class="c-icon">💻</span><div class="label">VS Code</div></button>
+            <button class="control-btn app-btn" data-app="explorer.exe"><span class="c-icon">📂</span><div class="label">Explorer</div></button>
+            <button class="control-btn app-btn" data-app="cmd.exe"><span class="c-icon">⌨️</span><div class="label">Terminal</div></button>
+            <button class="control-btn app-btn" data-app="mspaint.exe"><span class="c-icon">🎨</span><div class="label">Paint</div></button>
+            <button class="control-btn app-btn" data-app="snippingtool"><span class="c-icon">✂️</span><div class="label">Snipping</div></button>
+            <button class="control-btn app-btn" data-app="msedge"><span class="c-icon">🔵</span><div class="label">Edge</div></button>
+            <button class="control-btn app-btn" data-app="spotify"><span class="c-icon">🎵</span><div class="label">Spotify</div></button>
+            <button class="control-btn app-btn" data-app="discord"><span class="c-icon">🎮</span><div class="label">Discord</div></button>
+            <button class="control-btn app-btn" data-app="taskmgr.exe"><span class="c-icon">📊</span><div class="label">Task Mgr</div></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NEURAL CONTROL PAGE (Admin) ═══ -->
+    <div class="page" id="page-neural">
+      <div class="page-top-bar">
+        <div class="status-badge online" id="coreBadge">● NEURAL CORE ACTIVE</div>
+      </div>
+      <h2 class="neural-title">CONTROL UNIT</h2>
+      <div class="neural-layout">
+        <div class="neural-center">
+          <div class="voice-orb" id="voiceOrb">
+            <div class="orb-ring ring-1"></div>
+            <div class="orb-ring ring-2"></div>
+            <div class="orb-ring ring-3"></div>
+            <div class="orb-core">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--cyan)"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </div>
+          </div>
+          <div class="orb-label" id="orbLabel">IGRIS ACTIVE</div>
+          <div class="orb-subtitle">IGRIS STANDBY</div>
+          <div class="neural-input">
+            <input type="text" id="neuralInput" placeholder="Neural command..." autocomplete="off">
+            <button class="btn-send" id="neuralSendBtn">➤</button>
+          </div>
+          <div class="neural-response" id="neuralResponse"></div>
+        </div>
+        <div class="neural-right">
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">NEURAL LINK DEVICES</span>
+              <button class="btn-icon-sm" id="btnRefreshDevices">⟳</button>
+            </div>
+            <div class="device-section">
+              <div class="section-label">SYSTEM</div>
+              <div class="device-card">
+                <div class="device-icon-box">🖥</div>
+                <div class="device-info">
+                  <div class="device-name">Desktop Agent</div>
+                  <div class="device-status"><span class="dot" id="agentDot"></span><span id="agentStatus">CHECKING...</span></div>
+                  <div class="device-location">WORKSTATION</div>
+                </div>
+                <button class="btn-device-action" id="btnAgentPing">⟳</button>
+              </div>
+            </div>
+            <div class="device-section">
+              <div class="section-label">QUICK ACTIONS</div>
+              <div class="neural-quick-grid">
+                <button class="qbtn" data-action="lock"><span>🔒</span><small>Lock</small></button>
+                <button class="qbtn" data-action="sleep"><span>😴</span><small>Sleep</small></button>
+                <button class="qbtn" data-action="volume_mute"><span>🔇</span><small>Mute</small></button>
+                <button class="qbtn" data-action="screenshot"><span>📸</span><small>Capture</small></button>
+                <button class="qbtn" data-action="volume_up"><span>🔊</span><small>Vol+</small></button>
+                <button class="qbtn" data-action="volume_down"><span>🔉</span><small>Vol-</small></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <div class="status-item"><div class="status-label">VOICE ENGINE</div><div class="status-val">System TTS <span class="badge ready">READY</span></div></div>
+        <div class="status-item"><div class="status-label">BACKEND</div><div class="status-val">Cloud Link <span class="badge pending" id="cloudBadge">PENDING</span></div></div>
+        <div class="status-item"><div class="status-label">AGENT</div><div class="status-val">Desktop <span class="badge" id="agentBadge">CHECKING</span></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ NEURAL LOGS PAGE (Admin) ═══ -->
+    <div class="page" id="page-logs">
+      <div class="page-top-bar"><div class="status-badge online">● NEURAL ACTIVITY LOG</div></div>
+      <h2 class="neural-title">NEURAL LOGS</h2>
+      <div class="page-body">
+        <div class="panel-card">
+          <div class="panel-header">
+            <span class="panel-title">CONVERSATION HISTORY</span>
+            <button class="btn-icon-sm" id="btnRefreshLogs">⟳</button>
+          </div>
+          <div class="logs-container" id="logsContainer">
+            <div class="log-empty">No conversations yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SYSTEM CONFIG PAGE (Admin) ═══ -->
+    <div class="page" id="page-config">
+      <div class="page-top-bar"><div class="status-badge online">● SYSTEM CONFIGURATION</div></div>
+      <h2 class="neural-title">SYSTEM CONFIG</h2>
+      <div class="page-body">
+        <div class="config-grid">
+          <div class="panel-card">
+            <div class="panel-header"><span class="panel-title">CONNECTION</span></div>
+            <div class="config-item"><label>Backend URL</label><input type="text" id="configBackendUrl" class="config-input" value="http://localhost:8080"></div>
+            <div class="config-item"><label>Status</label><div class="config-status" id="configStatus">Checking...</div></div>
+            <div class="config-item"><button class="btn-primary btn-sm" id="btnSaveConfig">Save & Reconnect</button></div>
+          </div>
+          <div class="panel-card">
+            <div class="panel-header"><span class="panel-title">API KEYS</span></div>
+            <div class="config-item"><label>Gemini API Key</label><input type="password" id="configGeminiKey" class="config-input" placeholder="Enter Gemini key..."></div>
+            <div class="config-item"><button class="btn-primary btn-sm" id="btnSaveGemini">Save Key</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

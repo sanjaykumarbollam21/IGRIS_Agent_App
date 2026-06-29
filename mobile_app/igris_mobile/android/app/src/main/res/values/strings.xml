@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Strings used by the native "Hey IGRIS" wake word foreground service.
+      Defined here so we don't hardcode user-facing text in Kotlin.
+    -->
+    <string name="wake_word_notification_title">IGRIS is listening</string>
+    <string name="wake_word_notification_text">Say "Hey IGRIS" to wake the assistant. Tap to open, use Stop to end.</string>
+    <string name="wake_word_notification_stop">Stop</string>
+</resources>

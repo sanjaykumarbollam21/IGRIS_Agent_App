@@ -1,0 +1,195 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const authOverlay = document.getElementById('authOverlay');
+    const appShell = document.getElementById('appShell');
+    const authForm = document.getElementById('authForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const navItems = document.querySelectorAll('.nav-item');
+    const pageContent = document.getElementById('pageContent');
+    const pageHeading = document.getElementById('pageHeading');
+    const currentTimeEl = document.getElementById('currentTime');
+    const activityList = document.getElementById('activityList');
+
+    // --- Auth Logic ---
+    authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        authOverlay.classList.add('hidden');
+        appShell.classList.remove('hidden');
+        localStorage.setItem('igris_sync_auth', 'true');
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('igris_sync_auth');
+        appShell.classList.add('hidden');
+        authOverlay.classList.remove('hidden');
+    });
+
+    if (localStorage.getItem('igris_sync_auth') === 'true') {
+        authOverlay.classList.add('hidden');
+        appShell.classList.remove('hidden');
+    }
+
+    // --- Navigation ---
+    function navigateTo(pageId) {
+        navItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('data-page') === pageId);
+        });
+
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.toggle('active', page.id === `page-${pageId}`);
+        });
+
+        const activeNav = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+        pageHeading.textContent = activeNav ? activeNav.querySelector('.label').textContent : 'Dashboard';
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo(item.getAttribute('data-page'));
+        });
+    });
+
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            navigateTo(btn.getAttribute('data-page'));
+        });
+    });
+
+    // --- Utilities ---
+    function updateTime() {
+        const now = new Date();
+        currentTimeEl.textContent = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // --- Dashboard Activity Simulation ---
+    const mockActivities = [
+        { action: "AI Chat: Analysis completed", time: "2m ago", icon: "✨" },
+        { action: "Device: Primary Mobile connected", time: "15m ago", icon: "📱" },
+        { action: "Calendar: Meeting at 3 PM", time: "1h ago", icon: "📅" },
+        { action: "Sync: 142 files updated", time: "3h ago", icon: "☁️" },
+        { action: "Auth: New login from Chrome", time: "5h ago", icon: "🔑" },
+    ];
+
+    function renderActivity() {
+        activityList.innerHTML = mockActivities.map(act => `
+            <div class="activity-item">
+                <span class="act-icon">${act.icon}</span>
+                <span class="act-text">${act.action}</span>
+                <span class="time">${act.time}</span>
+            </div>
+        `).join('');
+    }
+    renderActivity();
+
+    // --- AI Chat Logic ---
+    const aiInput = document.getElementById('aiInput');
+    const aiSend = document.getElementById('aiSend');
+    const aiMessages = document.getElementById('aiMessages');
+
+    function addAiMessage(text, sender = 'bot') {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+        aiMessages.appendChild(msgDiv);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    }
+
+    aiSend.addEventListener('click', () => {
+        const text = aiInput.value.trim();
+        if (!text) return;
+
+        addAiMessage(text, 'user');
+        aiInput.value = '';
+
+        setTimeout(() => {
+            const responses = [
+                "I've analyzed the data from your mobile device. Everything looks correct.",
+                "Executing a web search for the latest updates... One moment.",
+                "Based on your calendar, you have a conflict at 4 PM. Should I reschedule?",
+                "Image generated successfully. You can find it in your mobile gallery.",
+                "I'm now monitoring your device's Ringer Mode via the sync bridge."
+            ];
+            addAiMessage(responses[Math.floor(Math.random() * responses.length)], 'bot');
+        }, 800);
+    });
+
+    aiInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') aiSend.click();
+    });
+
+    // --- Task Manager Logic ---
+    const taskList = document.getElementById('taskList');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    let tasks = [
+        { id: 1, title: "Audit neural network weights", category: "System", completed: false, time: "Due today" },
+        { id: 2, title: "Synchronize mobile device metadata", category: "Sync", completed: true, time: "Completed 2h ago" },
+        { id: 3, title: "Review AI transcription logs", category: "AI", completed: false, time: "Due tomorrow" },
+    ];
+
+    function renderTasks() {
+        taskList.innerHTML = tasks.map(task => `
+            <div class="task-item ${task.completed ? 'task-completed' : ''}">
+                <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                <div class="task-content">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-meta">${task.category} • ${task.time}</div>
+                </div
+            </div>
+        `).join('');
+    }
+
+    addTaskBtn.addEventListener('click', () => {
+        const title = prompt("Enter task description:");
+        if (title) {
+            tasks.push({ id: Date.now(), title, category: "General", completed: false, time: "Just now" });
+            renderTasks();
+        }
+    });
+
+    taskList.addEventListener('change', (e) => {
+        if (e.target.classList.contains('task-checkbox')) {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            renderTasks();
+        }
+    });
+
+    renderTasks();
+
+    // --- History Logic ---
+    const historyList = document.getElementById('historyList');
+    const mockHistory = [
+        { title: "Neural Sync Optimization", date: "2026-06-15", preview: "Operator asked about optimizing sync intervals...", id: "h1" },
+        { title: "Device Connectivity Debug", date: "2026-06-14", preview: "Analysis of Node-02 latency spikes...", id: "h2" },
+        { title: "AI Capability Expansion", date: "2026-06-12", preview: "Discussion regarding image generation plugins...", id: "h3" },
+        { title: "Initial System Boot", date: "2026-06-10", preview: "First neural link established between mobile and web...", id: "h4" },
+    ];
+
+    function renderHistory() {
+        historyList.innerHTML = mockHistory.map(h => `
+            <div class="history-entry" onclick="alert('Loading conversation ${h.id}...')">
+                <div class="meta">
+                    <span class="history-title">${h.title}</span>
+                    <span class="history-date">${h.date}</span>
+                </div>
+                <div class="preview">${h.preview}</div>
+            </div>
+        `).join('');
+    }
+    renderHistory();
+
+    // --- Capability Tab switching (Simple) ---
+    document.querySelectorAll('.cap-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.cap-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+});

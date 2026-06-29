@@ -1,0 +1,9 @@
+{
+  "name": "igris-desktop",
+  "version": "4.1.0",
+  "description": "IGRIS Desktop - AI Personal Assistant",
+  "scripts": {
+    "dev": "npx -y live-server --port=3000 --no-browser",
+    "start": "npx -y live-server --port=3000"
+  }
+}

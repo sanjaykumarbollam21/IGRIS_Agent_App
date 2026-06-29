@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IGRIS — AI Neural Control Hub</title>
+  <meta name="description" content="IGRIS: Premium AI-powered dashboard with real-time hardware telemetry, remote system controls, and Gemini integration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ═══ PREMIUM LOGIN OVERLAY ═══ -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="glow-sphere sphere-1"></div>
+    <div class="glow-sphere sphere-2"></div>
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo animate-glow">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <polygon points="50,5 93,30 93,80 50,95 7,80 7,30" fill="none" stroke="var(--accent-glow)" stroke-width="3" />
+            <polygon points="50,15 85,35 85,75 50,88 15,75 15,35" fill="none" stroke="var(--cyan)" stroke-width="1.5" opacity="0.6" />
+            <circle cx="50" cy="50" r="14" fill="var(--cyan)" opacity="0.15" />
+            <circle cx="50" cy="50" r="6" fill="var(--cyan)" />
+          </svg>
+        </div>
+        <h2>NEURAL LINK</h2>
+        <p>Authenticate operator credentials to establish uplink</p>
+      </div>
+      <form id="loginForm" autocomplete="off">
+        <div class="input-group">
+          <label for="loginEmail">OPERATOR EMAIL</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="loginEmail" required placeholder="operator@igris.ai">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="loginPassword">ACCESS KEY</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="loginPassword" required placeholder="••••••••">
+          </div>
+        </div>
+        <div class="login-error" id="loginError"></div>
+        <button type="submit" class="btn-primary" id="loginBtn">
+          <span class="btn-text">ESTABLISH LINK</span>
+          <span class="btn-loader" style="display:none">
+            <svg viewBox="0 0 24 24" width="20" height="20" class="spinner"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="30 10"/></svg>
+          </span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Sidebar ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 100 100" width="36" height="36">
+          <polygon points="50,8 90,31 90,77 50,92 10,77 10,31" fill="none" stroke="var(--cyan)" stroke-width="4"/>
+          <circle cx="50" cy="50" r="10" fill="var(--cyan)"/>
+        </svg>
+      </div>
+      <div>
+        <h1>IGRIS</h1>
+        <span class="brand-version">NEURAL V2</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">INTERFACE</div>
+      <div class="nav-item active" data-page="chat">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>AI Assistant</span>
+      </div>
+      <div class="nav-item" data-page="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span>Telemetry</span>
+      </div>
+      <div class="nav-item" data-page="controls">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <span>System Controls</span>
+      </div>
+      <div class="nav-item" data-page="apps">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>App Launcher</span>
+      </div>
+
+      <div class="nav-section-title admin-only" id="adminSectionTitle">CORE ADMIN</div>
+      <div class="nav-item admin-only" data-page="neural">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <span>Neural Control</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item admin-only" data-page="logs">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>Neural Logs</span>
+      </div>
+      <div class="nav-item admin-only" data-page="config">
+        <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>System Config</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="backend-status">
+        <div class="status-dot pulsing" id="statusDot"></div>
+        <span id="statusLabel">Uplinking...</span>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-details">
+          <div class="user-name" id="userName">User</div>
+          <div class="user-role" id="userRole">OPERATOR</div>
+        </div>
+      </div>
+      <button class="btn-deauth" id="btnLogout">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Deauthorize</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ─── -->
+  <main class="main-content">
+
+    <!-- ═══ CHAT PAGE ═══ -->
+    <div class="page active" id="page-chat">
+      <header class="page-header">
+        <div>
+          <h2>AI Neural Companion</h2>
+          <p class="subtitle">Direct uplink with Gemini 2.0 Flash</p>
+        </div>
+      </header>
+      <div class="chat-container card">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-empty" id="chatEmpty">
+            <div class="icon-big animate-pulse">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <polygon points="50,10 90,32 90,78 50,90 10,78 10,32" fill="none" stroke="var(--cyan)" stroke-width="2" />
+                <circle cx="50" cy="50" r="18" fill="var(--cyan)" opacity="0.1" />
+                <path d="M40,50 L47,57 L60,44" fill="none" stroke="var(--cyan)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>SYSTEM ONLINE. READY FOR PROTOCOL.</h3>
+            <p>I am IGRIS. Direct system commands, query data, or chat.</p>
+            <div class="suggestion-chips">
+              <button class="chip" data-q="What is quantum computing?">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Quantum computing
+              </button>
+              <button class="chip" data-q="Lock my laptop">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Lock laptop
+              </button>
+              <button class="chip" data-q="Open Notepad">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Open Notepad
+              </button>
+              <button class="chip" data-q="Tell me a joke">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                Tell joke
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <button class="btn-icon" id="micBtn" title="Voice input">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="mic-svg"><path d="M12 1c-1.66 0-3 1.34-3 3v8c0 1.66 1.34 3 3 3s3-1.34 3-3V4c0-1.66-1.34-3-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4m-4 0h8"/></svg>
+          </button>
+          <input type="text" id="chatInput" placeholder="Send neural query..." autocomplete="off">
+          <button class="btn-icon send" id="sendBtn" title="Send">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TELEMETRY DASHBOARD ═══ -->
+    <div class="page" id="page-dashboard">
+      <header class="page-header">
+        <div>
+          <h2>System Telemetry</h2>
+          <p class="subtitle">Real-time system telemetry and diagnostic variables</p>
+        </div>
+      </header>
+      <div class="page-body">
+        <div class="stats-grid">
+          <div class="stat-card glass shadow-cyan">
+            <div class="stat-header">
+              <div class="stat-icon icon-blue">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+              </div>
+              <span class="stat-label">CPU CORE LOAD</span>
+            </div>
+            <div class="stat-telemetry">
+              <div class="stat-value" id="cpuUsage">--%</div>
+              <div class="telemetry-gauge">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="circle" id="cpuCircle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card glass shadow-purple">
+            <div class="stat-header">
+              <div class="stat-icon icon-purple">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <span class="stat-label">MEMORY UTILITY</span>
+            </div>
+            <div class="stat-telemetry">
+              <div class="stat-value" id="memUsage">--%</div>
+              <div class="telemetry-gauge">
+                <svg viewBox="0 0 36 36" class="circular-chart purple">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="circle" id="memCircle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card glass shadow-amber">
+            <div class="stat-header">
+              <div class="stat-icon icon-amber">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"/><line x1="23" y1="11" x2="23" y2="13"/></svg>
+              </div>
+              <span class="stat-label">POWER STORAGE</span>
+            </div>
+            <div class="stat-telemetry">
+              <div>
+                <div class="stat-value" id="batteryVal">--%</div>
+                <div class="stat-sub" id="batterySub">Unverified</div>
+              </div>
+              <div class="battery-visual">
+                <div class="battery-body">
+                  <div class="battery-level" id="batteryFill" style="width: 0%"></div>
+                </div>
+                <div class="battery-cap"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card glass shadow-green">
+            <div class="stat-header">
+              <div class="stat-icon icon-green">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <span class="stat-label">SESSION UPTIME</span>
+            </div>
+            <div class="stat-telemetry">
+              <div>
+                <div class="stat-value" id="uptimeVal">--</div>
+                <div class="stat-sub" id="uptimeSub">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="device-grid">
+          <div class="card glass">
+            <div class="card-header"><span class="card-title">🖥 HOST DEVICE IDENTITY</span></div>
+            <div id="deviceInfo" class="device-info-text">Host offline. Establish link first.</div>
+          </div>
+          <div class="card glass">
+            <div class="card-header"><span class="card-title">💾 LOGICAL FILESYSTEM</span></div>
+            <div id="diskInfo" class="device-info-text">Telemetries pending.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SYSTEM CONTROLS ═══ -->
+    <div class="page" id="page-controls">
+      <header class="page-header">
+        <div>
+          <h2>System Controls</h2>
+          <p class="subtitle">Direct terminal controls for host machine hardware</p>
+        </div>
+      </header>
+      <div class="page-body">
+        <div class="card glass" style="margin-bottom:24px">
+          <div class="card-header"><span class="card-title">⚡ POWER CONSOLE</span></div>
+          <div class="controls-grid">
+            <button class="control-btn shadow-cyan" data-action="lock">
+              <div class="c-icon icon-blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="label">Lock</div>
+              <div class="sub">Lock workstation</div>
+            </button>
+            <button class="control-btn shadow-purple" data-action="sleep">
+              <div class="c-icon icon-purple">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              </div>
+              <div class="label">Sleep</div>
+              <div class="sub">Suspend system</div>
+            </button>
+            <button class="control-btn shadow-amber" data-action="restart">
+              <div class="c-icon icon-amber">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </div>
+              <div class="label">Restart</div>
+              <div class="sub">30s countdown</div>
+            </button>
+            <button class="control-btn shadow-red" data-action="shutdown">
+              <div class="c-icon icon-red">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>
+              </div>
+              <div class="label">Shutdown</div>
+              <div class="sub">30s countdown</div>
+            </button>
+            <button class="control-btn shadow-green" data-action="cancel_shutdown">
+              <div class="c-icon icon-green">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+              <div class="label">Abort</div>
+              <div class="sub">Cancel timer</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="card glass" style="margin-bottom:24px">
+          <div class="card-header"><span class="card-title">🔊 AUDIO TRANSLATION</span></div>
+          <div class="controls-grid">
+            <button class="control-btn" data-action="volume_up">
+              <div class="c-icon icon-blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </div>
+              <div class="label">Volume +</div>
+            </button>
+            <button class="control-btn" data-action="volume_down">
+              <div class="c-icon icon-blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </div>
+              <div class="label">Volume -</div>
+            </button>
+            <button class="control-btn" data-action="volume_mute">
+              <div class="c-icon icon-purple">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+              </div>
+              <div class="label">Mute</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="two-column-grid">
+          <div class="card glass">
+            <div class="card-header"><span class="card-title">☀️ SCREEN MATRIX</span></div>
+            <div class="controls-grid compact">
+              <button class="control-btn" data-action="brightness_up">
+                <div class="c-icon icon-amber">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </div>
+                <div class="label">Brightness +</div>
+              </button>
+              <button class="control-btn" data-action="brightness_down">
+                <div class="c-icon icon-blue">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </div>
+                <div class="label">Brightness -</div>
+              </button>
+              <button class="control-btn" data-action="screen_off">
+                <div class="c-icon icon-purple">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div class="label">Screen Off</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="card glass">
+            <div class="card-header"><span class="card-title">🛠 SYSTEM UTILITIES</span></div>
+            <div class="controls-grid compact">
+              <button class="control-btn" data-action="screenshot">
+                <div class="c-icon icon-green">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </div>
+                <div class="label">Screenshot</div>
+              </button>
+              <button class="control-btn" data-action="open_explorer">
+                <div class="c-icon icon-blue">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="label">Files</div>
+              </button>
+              <button class="control-btn" data-action="task_manager">
+                <div class="c-icon icon-red">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+                </div>
+                <div class="label">Task Mgr</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ APP LAUNCHER ═══ -->
+    <div class="page" id="page-apps">
+      <header class="page-header">
+        <div>
+          <h2>App Launcher</h2>
+          <p class="subtitle">Launch registered host applications instantly</p>
+        </div>
+      </header>
+      <div class="page-body">
+        <div class="card glass" style="margin-bottom:24px">
+          <div class="card-header"><span class="card-title">TERMINAL LAUNCH COMMAND</span></div>
+          <div class="custom-launch">
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              <input type="text" id="appNameInput" placeholder="Application alias or executable (e.g. notepad, chrome)...">
+            </div>
+            <button class="btn-primary" id="launchAppBtn">
+              <span>LAUNCH</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="card-header"><span class="card-title">REGISTERED SYSTEM ALIASES</span></div>
+          <div class="apps-grid" id="appGrid">
+            <button class="app-card shadow-hover-cyan" data-app="notepad.exe">
+              <div class="app-icon-wrapper">📝</div>
+              <span>Notepad</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="calc.exe">
+              <div class="app-icon-wrapper">🧮</div>
+              <span>Calculator</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="chrome">
+              <div class="app-icon-wrapper">🌐</div>
+              <span>Chrome</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="code">
+              <div class="app-icon-wrapper">💻</div>
+              <span>VS Code</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="explorer.exe">
+              <div class="app-icon-wrapper">📂</div>
+              <span>Explorer</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="cmd.exe">
+              <div class="app-icon-wrapper">⌨️</div>
+              <span>Terminal</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="mspaint.exe">
+              <div class="app-icon-wrapper">🎨</div>
+              <span>Paint</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="snippingtool">
+              <div class="app-icon-wrapper">✂️</div>
+              <span>Snipping</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="msedge">
+              <div class="app-icon-wrapper">🔵</div>
+              <span>Edge</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="spotify">
+              <div class="app-icon-wrapper">🎵</div>
+              <span>Spotify</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="discord">
+              <div class="app-icon-wrapper">🎮</div>
+              <span>Discord</span>
+            </button>
+            <button class="app-card shadow-hover-cyan" data-app="taskmgr.exe">
+              <div class="app-icon-wrapper">📊</div>
+              <span>Task Mgr</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NEURAL CORE CONTROL (Admin) ═══ -->
+    <div class="page" id="page-neural">
+      <div class="page-top-bar">
+        <div class="status-badge online animate-pulse" id="coreBadge">● NEURAL CORE ACTIVE</div>
+      </div>
+      <h2 class="neural-title">COGNITIVE CONTROL MODULE</h2>
+      <div class="neural-layout">
+        <div class="neural-center">
+          <div class="voice-orb" id="voiceOrb">
+            <div class="orb-ring ring-1"></div>
+            <div class="orb-ring ring-2"></div>
+            <div class="orb-ring ring-3"></div>
+            <div class="orb-core">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--cyan)"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </div>
+          </div>
+          <div class="orb-label" id="orbLabel">IGRIS COGNITION ONLINE</div>
+          <div class="orb-subtitle">Awaiting vocal instruction sequence</div>
+          <div class="neural-input">
+            <input type="text" id="neuralInput" placeholder="Inject neural command directly..." autocomplete="off">
+            <button class="btn-send" id="neuralSendBtn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div class="neural-response card glass" id="neuralResponse"></div>
+        </div>
+        <div class="neural-right">
+          <div class="panel-card glass">
+            <div class="panel-header">
+              <span class="panel-title">SYNAPSE DEPLYS</span>
+              <button class="btn-icon-sm" id="btnRefreshDevices">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
+            </div>
+            <div class="device-section">
+              <div class="section-label">UPLINK AGENT</div>
+              <div class="device-card card">
+                <div class="device-icon-box">💻</div>
+                <div class="device-info">
+                  <div class="device-name">Desktop Agent</div>
+                  <div class="device-status"><span class="dot offline" id="agentDot"></span><span id="agentStatus">UPLINK OFFLINE</span></div>
+                  <div class="device-location">WORKSTATION CLIENT</div>
+                </div>
+                <button class="btn-device-action" id="btnAgentPing">P</button>
+              </div>
+            </div>
+            <div class="device-section">
+              <div class="section-label">COGNITIVE QUICK ACCESS</div>
+              <div class="neural-quick-grid">
+                <button class="qbtn" data-action="lock">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <small>Lock</small>
+                </button>
+                <button class="qbtn" data-action="sleep">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  <small>Sleep</small>
+                </button>
+                <button class="qbtn" data-action="volume_mute">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                  <small>Mute</small>
+                </button>
+                <button class="qbtn" data-action="screenshot">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  <small>Screen</small>
+                </button>
+                <button class="qbtn" data-action="volume_up">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <small>Vol+</small>
+                </button>
+                <button class="qbtn" data-action="volume_down">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+                  <small>Vol-</small>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="status-bar">
+        <div class="status-item"><div class="status-label">VOICE SYNTHESIS</div><div class="status-val">Local Speech <span class="badge ready">ONLINE</span></div></div>
+        <div class="status-item"><div class="status-label">COGNITIVE SERVER</div><div class="status-val">Supabase API <span class="badge pending" id="cloudBadge">DISCONNECTED</span></div></div>
+        <div class="status-item"><div class="status-label">DESKTOP AGENT</div><div class="status-val">Sync Link <span class="badge pending" id="agentBadge">PENDING</span></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ NEURAL LOGS ═══ -->
+    <div class="page" id="page-logs">
+      <div class="page-top-bar"><div class="status-badge online">● CENTRAL LOG MAIN MAIN</div></div>
+      <h2 class="neural-title">SESSION LOG TELEMETRY</h2>
+      <div class="page-body">
+        <div class="panel-card glass">
+          <div class="panel-header">
+            <span class="panel-title">TELEMETRY MATRIX DATA</span>
+            <button class="btn-icon-sm" id="btnRefreshLogs">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </button>
+          </div>
+          <div class="logs-container" id="logsContainer">
+            <div class="log-empty">Matrix telemetry logs empty. Establish links first.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SYSTEM CONFIG ═══ -->
+    <div class="page" id="page-config">
+      <div class="page-top-bar"><div class="status-badge online">● CONTROL CORE CONFIG</div></div>
+      <h2 class="neural-title">NODE SETTINGS</h2>
+      <div class="page-body">
+        <div class="config-grid">
+          <div class="panel-card glass">
+            <div class="panel-header"><span class="panel-title">UPLINK API CONFIG</span></div>
+            <div class="config-item">
+              <label>API Gateway Endpoint</label>
+              <input type="text" id="configBackendUrl" class="config-input" value="http://43.205.136.242:8080">
+            </div>
+            <div class="config-item">
+              <label>Synapse Uplink Status</label>
+              <div class="config-status" id="configStatus">Offline</div>
+            </div>
+            <div class="config-item">
+              <button class="btn-primary" id="btnSaveConfig">Save Configuration</button>
+            </div>
+          </div>
+          <div class="panel-card glass">
+            <div class="panel-header"><span class="panel-title">COGNITIVE VAULT KEYS</span></div>
+            <div class="config-item">
+              <label>Gemini API Token</label>
+              <input type="password" id="configGeminiKey" class="config-input" placeholder="Inject Gemini Client key...">
+            </div>
+            <div class="config-item">
+              <button class="btn-primary" id="btnSaveGemini">Save Credentials</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

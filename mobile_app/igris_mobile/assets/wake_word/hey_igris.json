@@ -1,0 +1,10 @@
+{
+  "model_name": "hey_igris",
+  "input_sample_rate": 16000,
+  "input_frame_samples": 1280,
+  "input_dtype": "float32",
+  "num_classes": 1,
+  "positive_class_index": 0,
+  "training_samples": 90,
+  "framework": "openwakeword + tensorflow-lite"
+}

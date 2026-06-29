@@ -1,0 +1,59 @@
+# Rule #1 — NEVER commit .env files or secrets to git
+# ─── Environment Variables ───
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+backend/.env
+telegram_bot/.env
+
+# ─── Dependencies ───
+node_modules/
+backend/node_modules/
+desktop_app/igris_web/node_modules/
+telegram_bot/igris_bot/__pycache__/
+telegram_bot/igris_bot/*.pyc
+telegram_bot/.venv/
+.venv/
+
+# ─── Build Outputs ───
+dist/
+build/
+*.min.js
+
+# ─── Database Files ───
+backend/data/*.sqlite
+backend/data/*.db
+
+# ─── Logs ───
+backend/logs/*.log
+logs/
+*.log
+
+# ─── Uploads (user content — Rule #8) ───
+backend/uploads/
+backend/src/uploads/
+
+# ─── OS & Editor ───
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+*.egg
+
+# ─── Mobile App ───
+mobile_app/.dart_tool/
+mobile_app/build/
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies

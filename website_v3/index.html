@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGRIS // Neural Control Plane</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient Background Elements -->
+    <div class="grid-overlay"></div>
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-visual">
+                <div class="logo-container">
+                    <svg viewBox="0 0 100 100" class="main-logo">
+                        <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" fill="none" stroke="var(--accent)" stroke-width="2" />
+                        <circle cx="50" cy="50" r="5" fill="var(--accent)" />
+                        <path d="M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.5" />
+                    </svg>
+                    <div class="logo-ring"></div>
+                </div>
+                <h1>IGRIS <span class="sub">v3.0</span></h1>
+                <p>Awaiting Operator Authentication</p>
+            </div>
+            <form id="authForm" class="auth-form">
+                <div class="field">
+                    <label>Operator Identity</label>
+                    <input type="email" id="email" placeholder="name@domain.com" required>
+                </div>
+                <div class="field">
+                    <label>Access Key</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Initialize Uplink</button>
+            </form>
+            <div class="auth-footer">
+                <span>Secure Neural Link Protocol 4.2</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Shell -->
+    <div id="appShell" class="app-shell hidden">
+        <!-- Side Navigation -->
+        <nav class="side-nav">
+            <div class="nav-top">
+                <div class="nav-logo">
+                    <svg viewBox="0 0 100 100" width="32" height="32">
+                        <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" fill="none" stroke="var(--accent)" stroke-width="4" />
+                    </svg>
+                    <span>IGRIS</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active" data-page="dashboard">
+                    <span class="icon">📊</span>
+                    <span class="label">Overview</span>
+                </a>
+                <a href="#" data-page="neural">
+                    <span class="icon">🧠</span>
+                    <span class="label">Neural Link</span>
+                </a>
+                <a href="#" data-page="hardware">
+                    <span class="icon">💻</span>
+                    <span class="label">Hardware</span>
+                </a>
+                <a href="#" data-page="settings">
+                    <span class="icon">⚙️</span>
+                    <span class="label">Configuration</span>
+                </a>
+            </div>
+            <div class="nav-bottom">
+                <div class="user-profile">
+                    <div class="avatar">S</div>
+                    <div class="user-info">
+                        <span class="name">Sanjan</span>
+                        <span class="status">Operator</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-logout">Disconnect</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumb">
+                    <span class="current-page" id="pageTitle">Overview</span>
+                </div>
+                <div class="system-status">
+                    <div class="status-item">
+                        <span class="dot online"></span>
+                        <span class="label">System: Stable</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Latency: <span id="latency">24ms</span></span>
+                    </div>
+                    <div class="clock" id="digitalClock">00:00:00</div>
+                </div>
+            </header>
+
+            <div id="contentArea" class="content-area">
+                <!-- Dashboard Page (Default) -->
+                <div id="page-dashboard" class="page active">
+                    <div class="hero-section">
+                        <div class="hero-text">
+                            <h2>Welcome back, <span class="accent-text">Operator</span>.</h2>
+                            <p>All neural conduits are nominal. System synchronization at 98.4%.</p>
+                        </div>
+                        <div class="hero-action">
+                            <button class="btn-glass">Run Diagnostics</button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- Telemetry Card 1 -->
+                        <div class="card telemetry-card">
+                            <div class="card-header">
+                                <span class="title">CPU Load</span>
+                                <span class="value" id="cpu-val">12%</span>
+                            </div>
+                            <div class="chart-placeholder">
+                                <div class="bar-container">
+                                    <div class="bar" style="height: 40%"></div>
+                                    <div class="bar" style="height: 60%"></div>
+                                    <div class="bar" style="height: 30%"></div>
+                                    <div class="bar" style="height: 80%"></div>
+                                    <div class="bar" style="height: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Telemetry Card 2 -->
+                        <div class="card telemetry-card">
+                            <div class="card-header">
+                                <span class="title">Memory Usage</span>
+                                <span class="value" id="mem-val">4.2GB</span>
+                            </div>
+                            <div class="chart-placeholder">
+                                <div class="circular-progress">
+                                    <svg width="60" height="60">
+                                        <circle cx="30" cy="30" r="25" stroke="var(--bg-dark)" stroke-width="5" fill="none" />
+                                        <circle cx="30" cy="30" r="25" stroke="var(--accent)" stroke-width="5" fill="none"
+                                                stroke-dasharray="157" stroke-dashoffset="60" class="progress-ring" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Telemetry Card 3 -->
+                        <div class="card telemetry-card">
+                            <div class="card-header">
+                                <span class="title">Network Flux</span>
+                                <span class="value" id="net-val">1.2 Gbps</span>
+                            </div>
+                            <div class="chart-placeholder">
+                                <div class="wave-form"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-grid">
+                        <div class="card log-card">
+                            <div class="card-header">
+                                <span class="title">System Event Stream</span>
+                                <span class="action">Clear Logs</span>
+                            </div>
+                            <div class="log-stream" id="logStream">
+                                <div class="log-entry">[08:42:01] Neural bridge established.</div>
+                                <div class="log-entry">[08:42:05] Memory buffer allocated: 64GB.</div>
+                                <div class="log-entry">[08:43:12] AI Core synchronized.</div>
+                            </div>
+                        </div>
+                        <div class="card control-card">
+                            <div class="card-header">
+                                <span class="title">Quick Actions</span>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-item">
+                                    <label>AI Core State</label>
+                                    <input type="checkbox" class="switch" checked>
+                                </div>
+                                <div class="control-item">
+                                    <label>Remote Debugging</label>
+                                    <input type="checkbox" class="switch">
+                                </div>
+                                <div class="control-item">
+                                    <label>Auto-Optimization</label>
+                                    <input type="checkbox" class="switch" checked>
+                                </div>
+                            </div>
+                            <button class="btn-primary full-width">Deploy Neural Patch</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neural Link Page -->
+                <div id="page-neural" class="page">
+                    <div class="page-header">
+                        <h2>Neural Interface</h2>
+                        <p>Direct interaction with the IGRIS AI core.</p>
+                    </div>
+                    <div class="chat-container">
+                        <div class="messages" id="neuralMessages">
+                            <div class="msg bot">
+                                <div class="bubble">Neural Link active. How can I assist your operations today, Operator?</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="neuralInput" placeholder="Enter command or query...">
+                            <button id="sendNeuralBtn" class="btn-primary">Execute</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hardware Page -->
+                <div id="page-hardware" class="page">
+                    <div class="page-header">
+                        <h2>Hardware Telemetry</h2>
+                        <p>Real-time monitoring of physical compute nodes.</p>
+                    </div>
+                    <div class="hardware-grid">
+                        <div class="card hw-node">
+                            <div class="node-header">
+                                <span>Node-01 (Primary)</span>
+                                <span class="status-tag">Active</span>
+                            </div>
+                            <div class="node-stats">
+                                <div class="stat"><span>Temp</span> <span class="val">42°C</span></div>
+                                <div class="stat"><span>Load</span> <span class="val">14%</span></div>
+                                <div class="stat"><span>Uptime</span> <span class="val">12d 4h</span></div>
+                            </div>
+                        </div>
+                        <div class="card hw-node">
+                            <div class="node-header">
+                                <span>Node-02 (Auxiliary)</span>
+                                <span class="status-tag warning">Standby</span>
+                            </div>
+                            <div class="node-stats">
+                                <div class="stat"><span>Temp</span> <span class="val">31°C</span></div>
+                                <div class="stat"><span>Load</span> <span class="val">0%</span></div>
+                                <div class="stat"><span>Uptime</span> <span class="val">0d 0h</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="page-settings" class="page">
+                    <div class="page-header">
+                        <h2>System Configuration</h2>
+                        <p>Adjust core parameters and security protocols.</p>
+                    </div>
+                    <div class="settings-list">
+                        <div class="settings-group">
+                            <h3>Security</h3>
+                            <div class="setting-item">
+                                <span>Two-Factor Authentication</span>
+                                <input type="checkbox" class="switch" checked>
+                            </div>
+                            <div class="setting-item">
+                                <span>Neural Encryption (AES-512)</span>
+                                <input type="checkbox" class="switch" checked>
+                            </div>
+                        </div>
+                        <div class="settings-group">
+                            <h3>Appearance</h3>
+                            <div class="setting-item">
+                                <span>Accent Color</span>
+                                <div class="color-picker">
+                                    <div class="color-option active" style="background: var(--accent)"></div>
+                                    <div class="color-option" style="background: #ff0055"></div>
+                                    <div class="color-option" style="background: #00ffaa"></div>
+                                    <div class="color-option" style="background: #ffaa00"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

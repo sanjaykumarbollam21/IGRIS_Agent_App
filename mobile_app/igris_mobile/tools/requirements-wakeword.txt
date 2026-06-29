@@ -1,0 +1,48 @@
+# Pinned for reproducible "Hey IGRIS" wake word training.
+# Tested on Python 3.11 (your venv) and 3.12.
+#
+# Install with (PowerShell):
+#     python -m venv .venv-wakeword
+#     .\.venv-wakeword\Scripts\Activate.ps1
+#     python -m pip install --upgrade pip
+#     pip install -r tools/requirements-wakeword.txt
+#
+# Note on Python 3.13: tensorflow 2.17+ adds cp313 wheels; we pin 2.18.0
+# which works on 3.9-3.12. If you're on 3.13 and hit "no wheels", drop
+# the version back to 2.17.0 (first TF with cp313) or 2.18.0 (current).
+#
+# We also pin the CPU-only PyTorch wheels (multi-GB CUDA wheels are
+# otherwise pulled by default on Windows). The `--extra-index-url`
+# directive at the TOP of the file tells pip where to find them.
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Core ML pipeline.
+tensorflow==2.18.0
+numpy==1.26.4
+scipy==1.11.4
+librosa==0.10.1
+soundfile==0.12.1
+
+# Wake word model framework (openWakeWord is Apache 2.0).
+openwakeword @ git+https://github.com/dscripka/openWakeWord
+
+# ONNX → TensorFlow conversion (intermediate step in the export pipeline).
+# onnxscript is required by torch.onnx.export in PyTorch >= 2.1.
+onnx==1.15.0
+onnx-tf==1.10.0
+onnxscript==0.1.0
+tensorflow-probability==0.23.0  # openWakeWord's training script depends on it
+
+# PyTorch (CPU-only) is required by openWakeWord's training loop and by
+# the torch.onnx.export call in train_wake_word.py.
+torch==2.4.1+cpu
+torchvision==0.19.1+cpu
+torchaudio==2.4.1+cpu
+
+# Optional: only needed if you use --synth-positives to bootstrap a model.
+gTTS==2.5.1
+
+# Optional: only needed if you want to test the model locally before
+# shipping to the device. Provides a CLI to run inference on a WAV file.
+tflite-support==0.4.4

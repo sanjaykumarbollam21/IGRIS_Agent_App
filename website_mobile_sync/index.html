@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGRIS Mobile Sync — Unified AI Suite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo-mark">I</div>
+                <h1>IGRIS</h1>
+                <p>Enter your credentials to sync with mobile core</p>
+            </div>
+            <form id="authForm" class="auth-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="operator@igris.ai" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Continue</button>
+            </form>
+            <div class="auth-footer">
+                <a href="#">Forgot password?</a> • <a href="#">Create account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appShell" class="app-shell hidden">
+        <!-- Side Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-circle">I</div>
+                <span class="brand-text">IGRIS Suite</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="group-label">Core</span>
+                    <a href="#" class="nav-item active" data-page="home">
+                        <span class="icon">🏠</span>
+                        <span class="label">Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="ai">
+                        <span class="icon">✨</span>
+                        <span class="label">AI Workspace</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <span class="group-label">Integrations</span>
+                    <a href="#" class="nav-item" data-page="tools">
+                        <span class="icon">🛠️</span>
+                        <span class="label">Tools & Suite</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="tasks">
+                        <span class="icon">✅</span>
+                        <span class="label">Task Manager</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="history">
+                        <span class="icon">📜</span>
+                        <span class="label">History</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="devices">
+                        <span class="icon">📱</span>
+                        <span class="label">Device Control</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <span class="group-label">System</span>
+                    <a href="#" class="nav-item" data-page="settings">
+                        <span class="icon">⚙️</span>
+                        <span class="label">Settings</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="status">
+                        <span class="icon">📡</span>
+                        <span class="label">System Status</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-chip">
+                    <div class="avatar">S</div>
+                    <div class="user-details">
+                        <span class="username">Sanjan</span>
+                        <span class="user-role">Primary Operator</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-logout">Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-container">
+            <header class="main-header">
+                <div class="header-left">
+                    <h2 id="pageHeading">Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <div class="status-pill">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Synced with Mobile</span>
+                    </div>
+                    <div class="date-time" id="currentTime">---</div>
+                </div>
+            </header>
+
+            <div id="pageContent" class="page-content">
+                <!-- HOME PAGE -->
+                <div id="page-home" class="page active">
+                    <div class="welcome-banner">
+                        <h1>Hello, Sanjan</h1>
+                        <p>Your AI suite is active and synchronized. Here is what's happening today.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Active Tasks</span>
+                            <span class="stat-value">12</span>
+                            <span class="stat-trend up">+2 today</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">AI Tokens</span>
+                            <span class="stat-value">1.2M</span>
+                            <span class="stat-trend">Usage: 45%</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">System Health</span>
+                            <span class="stat-value">Optimal</span>
+                            <span class="stat-trend success">All Nodes Online</span>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-layout">
+                        <div class="recent-activity card">
+                            <h3>Recent Activity</h3>
+                            <div class="activity-list" id="activityList">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                        <div class="quick-actions card">
+                            <h3>Quick Access</h3>
+                            <div class="action-grid">
+                                <button class="action-btn" data-page="ai">✨ Start AI Chat</button>
+                                <button class="action-btn" data-page="tools">📅 Check Calendar</button>
+                                <button class="action-btn" data-page="devices">📱 Remote Control</button>
+                                <button class="action-btn" data-page="settings">⚙️ Configure AI</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI WORKSPACE PAGE -->
+                <div id="page-ai" class="page">
+                    <div class="ai-layout">
+                        <div class="ai-sidebar">
+                            <h3>Capabilities</h3>
+                            <div class="capability-list">
+                                <button class="cap-btn active">💬 Chat</button>
+                                <button class="cap-btn">🖼️ Image Gen</button>
+                                <button class="cap-btn">📝 Transcribe</button>
+                                <button class="cap-btn">🎥 Video Analysis</button>
+                                <button class="cap-btn">🌐 Web Search</button>
+                            </div>
+                        </div>
+                        <div class="chat-workspace">
+                            <div class="chat-messages" id="aiMessages">
+                                <div class="message bot">
+                                    <div class="bubble">Welcome to the AI Workspace. All mobile-synced capabilities are available here. How can I help?</div>
+                                </div>
+                            </div>
+                            <div class="chat-input-container">
+                                <input type="text" id="aiInput" placeholder="Ask IGRIS anything...">
+                                <button id="aiSend" class="btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOLS PAGE -->
+                <div id="page-tools" class="page">
+                    <div class="tools-grid">
+                        <div class="tool-card">
+                            <div class="tool-icon">📅</div>
+                            <h4>Calendar</h4>
+                            <p>Manage your neural schedule and reminders.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">📝</div>
+                            <h4>Task Manager</h4>
+                            <p>Track objectives and project milestones.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">✉️</div>
+                            <h4>Gmail Sync</h4>
+                            <p>AI-powered email drafting and sorting.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                        <div class="tool-card">
+ la							<div class="tool-icon">🗺️</div>
+                            <h4>Maps</h4>
+                            <p>Neural location tracking and routing.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">⚙️</div>
+                            <h4>Automations</h4>
+                            <p>Set up complex trigger-action sequences.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon">📜</div>
+                            <h4>History</h4>
+                            <p>Review previous AI conversations.</p>
+                            <button class="btn-secondary">Open</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DEVICES PAGE -->
+                <div id="page-devices" class="page">
+                    <div class="device-manager">
+                        <div class="device-card">
+                            <div class="device-info">
+                                <div class="device-icon">📱</div>
+                                <div>
+                                    <h4>Primary Mobile</h4>
+                                    <span>Android v14 • Connected</span>
+                                </div>
+                            </div>
+                            <div class="device-controls">
+                                <div class="control-item">
+                                    <span>Ringer Mode</span>
+                                    <input type="checkbox" class="switch" checked>
+                                </div>
+                                <div class="control-item">
+                                    <span>Wake Word</span>
+                                    <input type="checkbox" class="switch" checked>
+                                </div>
+                                <div class="control-item">
+                                    <span>Busy Mode</span>
+                                    <input type="checkbox" class="switch">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS PAGE -->
+                <div id="page-settings" class="page">
+                    <div class="settings-container">
+                        <div class="settings-section">
+                            <h3 class="section-title">Account & Profile</h3>
+                            <div class="setting-row">
+                                <span class="setting-label">Display Name</span>
+                                <input type="text" value="Sanjan" class="setting-input">
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">Operator ID</span>
+                                <span class="read-only">IGRIS-772-A</span>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3 class="section-title">AI Configuration</h3>
+                            <div class="setting-row">
+                                <span class="setting-label">API Key</span>
+                                <input type="password" value="••••••••••••••••" class="setting-input">
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">Voice Model</span>
+                                <select class="setting-select">
+                                    <option>Neural-Soprano (Default)</option>
+                                    <option>Cyber-Deep</option>
+                                    <option>Analytical-Clean</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">Wake Word</span>
+                                <input type="text" value="Hey IGRIS" class="setting-input">
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3 class="section-title">Privacy & Security</h3>
+                            <div class="setting-row">
+                                <span class="setting-label">Two-Factor Auth</span>
+                                <input type="checkbox" class="switch" checked>
+                            </div>
+                            <div class="setting-row">
+                                <span class="setting-label">Cloud Backup</span>
+                                <input type="checkbox" class="switch" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TASKS PAGE -->
+                <div id="page-tasks" class="page">
+                    <div class="tasks-header">
+                        <h2>Neural Task Queue</h2>
+                        <button class="btn-primary" id="addTaskBtn">+ New Task</button>
+                    </div>
+                    <div class="tasks-container">
+                        <div class="task-filter">
+                            <button class="filter-chip active">All</button>
+                            <button class="filter-chip">Pending</button>
+                            <button class="filter-chip">Completed</button>
+                        </div>
+                        <div class="task-list" id="taskList">
+                            <!-- Tasks injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORY PAGE -->
+                <div id="page-history" class="page">
+                    <div class="history-header">
+                        <h2>Conversation Archives</h2>
+                        <div class="history-controls">
+                            <input type="text" placeholder="Search archives..." class="history-search">
+                        </div>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <!-- History entries injected by JS -->
+                    </div>
+                </div>
+
+                <!-- STATUS PAGE -->
+                <div id="page-status" class="page">
+                    <div class="status-dashboard">
+                        <div class="status-card">
+                            <h4 class="status-title">System Health</h4>
+                            <div class="health-bar"><div class="fill" style="width: 98%"></div></div>
+                            <span class="status-val">98% Stable</span>
+                        </div>
+                        <div class="status-card">
+                            <h4 class="status-title">Connection Latency</h4>
+                            <div class="health-bar"><div class="fill" style="width: 20%"></div></div>
+                            <span class="status-val">24ms (Low)</span>
+                        </div>
+                        <div class="status-card">
+                            <h4 class="status-title">Neural Sync Rate</h4>
+                            <div class="health-bar"><div class="fill" style="width: 100%"></div></div>
+                            <span class="status-val">100% Synced</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
